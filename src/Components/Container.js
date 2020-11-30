@@ -42,6 +42,14 @@ export class Container extends Component {
     });
   };
 
+  DellContact = (email) => {
+    this.setState({
+      Persons: this.state.Persons.filter((p) => {
+        return p.email !== email;
+      }),
+    });
+  };
+
   render() {
     const myStyle = {
       //   border: "2px solid black",
@@ -56,7 +64,7 @@ export class Container extends Component {
           {this.state.Mode === true ? (
             <AddContact addContact={this.AddContact} />
           ) : (
-            <ContactList contact2={this.state.Persons} />
+            <ContactList persons={this.state.Persons} dell={this.DellContact} />
           )}
           {/* <div className="row">
             <div className="col-sm-6">

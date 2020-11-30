@@ -1,10 +1,22 @@
-import React, { Component } from "react";
+import React from "react";
+import ContactItem from "./ContactItem";
+const ContactList = (props) => {
+  return (
+    <div className="container mt-2">
+      {props.persons.map((p) => (
+        <li key={p.email}>
+          <ContactItem person={p} dell={props.dell} />
+        </li>
+      ))}
+    </div>
+  );
+};
 
-export class ContactList extends Component {
-  render() {
-    return (
-      <div className="container mt-2">
-        {/* <ul className="list-group">
+export default ContactList;
+
+/*
+
+        <ul className="list-group">
           {this.props.contact.map((user) => {
             return <li className="list-group-item">{user}</li>;
           })}
@@ -15,7 +27,7 @@ export class ContactList extends Component {
         </ul>
         {this.props.contact.map((user) => {
           return <h3>{user}</h3>;
-        })} */}
+        })}
         <table className="table table-hover table-striped">
           <thead className="thead-dark">
             <tr>
@@ -40,16 +52,6 @@ export class ContactList extends Component {
             })}
           </tbody>
         </table>
-      </div>
-    );
-  }
-}
-
-export default ContactList;
-
-/*
-
-
 
 
 */

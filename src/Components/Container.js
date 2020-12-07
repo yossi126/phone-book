@@ -6,28 +6,24 @@ import AddContact from "./AddContact";
 export class Container extends Component {
   state = {
     Persons: [],
-    Persons2: [
-      {
-        fname: "yossi",
-        lname: "bra",
-        phone: "080",
-        mail: "yossi126@gmail.com",
-      },
-      {
-        fname: "loten",
-        lname: "noy",
-        phone: "080",
-        mail: "yy@tt",
-      },
-      {
-        fname: "shuki",
-        lname: "miz",
-        phone: "080",
-        mail: "yy@tt",
-      },
-    ],
     Mode: false,
   };
+
+  constructor(props) {
+    super(props);
+    let { xhttp } = this.DbConn("GET", ".json");
+    xhttp.onload = () => {
+      this.setState({
+        Persons:
+          JSON.parse(xhttp.response) === null
+            ? []
+            : Object.values(JSON.parse(xhttp.response)),
+        Edit: "",
+        Mode: false,
+      });
+    };
+    xhttp.send();
+  }
 
   AddContactMode = () => {
     this.setState({
@@ -36,9 +32,17 @@ export class Container extends Component {
   };
 
   AddContact = (Contact) => {
+    let { xhttp } = this.DbConn("POST", ".json");
+    xhttp.onload = () => {
+      this.setState({
+        Persons: [...this.state.Persons, Contact],
+      });
+    };
+    xhttp.send(JSON.stringify(Contact));
+
     this.setState({
-      Persons: [...this.state.Persons, Contact],
       Mode: false,
+      Edit: "",
     });
   };
 
@@ -49,6 +53,15 @@ export class Container extends Component {
       }),
     });
   };
+
+  DbConn(method, addon) {
+    let xhttp = new XMLHttpRequest();
+    let url =
+      "https://phonebook-1b26b-default-rtdb.firebaseio.com/Contacts" + addon;
+    xhttp.open(method, url, true);
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    return { xhttp };
+  }
 
   render() {
     const myStyle = {

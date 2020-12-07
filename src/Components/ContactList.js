@@ -4,9 +4,9 @@ const ContactList = (props) => {
   return (
     <div className="container mt-2">
       {props.persons.map((p) => (
-        <li key={p.email}>
+        <ul key={p.email}>
           <ContactItem person={p} dell={props.dell} />
-        </li>
+        </ul>
       ))}
     </div>
   );

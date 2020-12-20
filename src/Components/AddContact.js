@@ -9,6 +9,17 @@ export class AddContact extends Component {
     email: "",
   };
 
+  componentDidMount() {
+    if (this.props.Person !== "") {
+      this.setState({
+        fname: this.props.Person.fname,
+        lname: this.props.Person.lname,
+        phone: this.props.Person.phone,
+        email: this.props.Person.email,
+      });
+    }
+  }
+
   onChange = (e) => {
     this.setState(
       {
@@ -57,13 +68,17 @@ export class AddContact extends Component {
           </div>
           <div>
             <label>Phone Number</label>
-            <input
-              type="text"
-              id="phone"
-              value={this.state.phone}
-              onChange={this.onChange}
-              className="form-control"
-            />
+            {this.props.Person === "" ? (
+              <input
+                type="text"
+                id="phone"
+                value={this.state.phone}
+                onChange={this.onChange}
+                className="form-control"
+              />
+            ) : (
+              <h1> {this.state.phone}</h1>
+            )}
           </div>
           <div>
             <label>Email</label>
@@ -75,12 +90,21 @@ export class AddContact extends Component {
               className="form-control"
             />
           </div>
-          <input
-            type="button"
-            value="Add"
-            className="btn btn-dark mt-2"
-            onClick={this.handeleSubmit}
-          />
+          {this.props.Person === "" ? (
+            <input
+              type="button"
+              value="Add"
+              className="btn btn-dark mt-2"
+              onClick={this.handeleSubmit}
+            />
+          ) : (
+            <input
+              type="button"
+              value="Edit"
+              className="btn btn-dark mt-2"
+              onClick={this.handeleSubmit}
+            />
+          )}
         </form>
       </div>
     );

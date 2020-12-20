@@ -5,7 +5,7 @@ const ContactList = (props) => {
     <div className="container mt-2">
       {props.persons.map((p) => (
         <ul key={p.email}>
-          <ContactItem person={p} dell={props.dell} />
+          <ContactItem person={p} dell={props.dell} ed={props.edit} />
         </ul>
       ))}
     </div>

@@ -3,12 +3,17 @@ import Header from "./Header";
 import ContactList from "./ContactList";
 import AddContact from "./AddContact";
 import axios from "axios";
+import Axios from "axios";
+
+const firebaseUrl =
+  "https://phonebook-1b26b-default-rtdb.firebaseio.com/Contacts";
 
 export class Container extends Component {
   state = {
     Persons: [],
     Mode: false,
     Edit: "",
+    List: [],
   };
 
   // constructor(props) {
@@ -27,18 +32,25 @@ export class Container extends Component {
   //   xhttp.send();
   // }
 
+  getContacts = () => {
+    axios.get(`${firebaseUrl}.json`).then((res) => {
+      // this.setState({ Persons: [] });
+      let data = Object.values(res.data);
+      this.setState({ Persons: data, List: data });
+    });
+  };
+
   constructor(props) {
     super(props);
-    axios
-      .get("https://phonebook-1b26b-default-rtdb.firebaseio.com/Contacts.json")
-      .then((res) => {
-        const persons = res.data;
-        this.setState({
-          Persons: persons === null ? [] : Object.values(persons),
-          Edit: "",
-          Mode: false,
-        });
-      });
+    this.getContacts();
+    // axios.get(`${firebaseUrl}.json`).then((res) => {
+    //   const persons = res.data;
+    //   this.setState({
+    //     Persons: persons === null ? [] : Object.values(persons),
+    //     Edit: "",
+    //     Mode: false,
+    //   });
+    // });
   }
 
   AddContactMode = () => {
@@ -49,6 +61,7 @@ export class Container extends Component {
 
   AddContact = (Contact) => {
     let data = '{"' + Contact.phone + '":' + JSON.stringify(Contact) + "}";
+    let data2 = `{+${Contact.phone}+:${JSON.stringify(Contact)}+}`;
     let url =
       "https://phonebook-1b26b-default-rtdb.firebaseio.com/Contacts.json";
     axios.patch(url, data).then((res) => {
@@ -58,33 +71,31 @@ export class Container extends Component {
         Edit: "",
       });
     });
-
-    // axios
-    // .post(
-    //   "https://phonebook-1b26b-default-rtdb.firebaseio.com/Contacts.json",
-    //   JSON.stringify(Contact)
-    // )
-    // .then((res) => {
-    //   this.setState({
-    //     Persons: [...this.state.Persons, Contact],
-    //     Mode: false,
-    //     Edit: "",
-    //   });
-    // });
-
-    // let { xhttp } = this.DbConn("POST", ".json");
-    // xhttp.onload = () => {
-    //   this.setState({
-    //     Persons: [...this.state.Persons, Contact],
-    //   });
-    // };
-    // xhttp.send(JSON.stringify(Contact));
-
-    // this.setState({
-    //   Mode: false,
-    //   Edit: "",
-    // });
   };
+
+  // axios
+  // .post(
+  //   "https://phonebook-1b26b-default-rtdb.firebaseio.com/Contacts.json",
+  //   JSON.stringify(Contact)
+  // )
+  // .then((res) => {
+  //   this.setState({
+  //     Persons: [...this.state.Persons, Contact],
+  //     Mode: false,
+  //     Edit: "",
+  //   });
+  // });
+  // let { xhttp } = this.DbConn("POST", ".json");
+  // xhttp.onload = () => {
+  //   this.setState({
+  //     Persons: [...this.state.Persons, Contact],
+  //   });
+  // };
+  // xhttp.send(JSON.stringify(Contact));
+  // this.setState({
+  //   Mode: false,
+  //   Edit: "",
+  // });
 
   DellContact = (phone) => {
     let url = "https://phonebook-1b26b-default-rtdb.firebaseio.com/Contacts";
@@ -97,20 +108,32 @@ export class Container extends Component {
     });
   };
 
-  DbConn(method, addon) {
-    let xhttp = new XMLHttpRequest();
-    let url =
-      "https://phonebook-1b26b-default-rtdb.firebaseio.com/Contacts" + addon;
-    xhttp.open(method, url, true);
-    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    return { xhttp };
-  }
+  // DbConn(method, addon) {
+  //   let xhttp = new XMLHttpRequest();
+  //   let url =
+  //     "https://phonebook-1b26b-default-rtdb.firebaseio.com/Contacts" + addon;
+  //   xhttp.open(method, url, true);
+  //   xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  //   return { xhttp };
+  // }
 
   EditContact = (phone) => {
     let index = this.state.Persons.findIndex((p) => p.phone === phone);
     this.setState({
       Edit: this.state.Persons[index],
       Mode: true,
+    });
+  };
+
+  SearchData = (data) => {
+    let list;
+    data === ""
+      ? (list = this.state.Persons)
+      : (list = this.state.Persons.filter((contact) => {
+          return contact.fname === data || contact.lname === data;
+        }));
+    this.setState({
+      List: list,
     });
   };
 
@@ -123,13 +146,16 @@ export class Container extends Component {
 
     return (
       <>
-        <Header AddContactMode={this.AddContactMode} />
+        <Header
+          AddContactMode={this.AddContactMode}
+          Searcher={this.SearchData}
+        />
         <div className="container mt-3" style={myStyle}>
           {this.state.Mode === true ? (
             <AddContact addContact={this.AddContact} Person={this.state.Edit} />
           ) : (
             <ContactList
-              persons={this.state.Persons}
+              persons={this.state.List}
               dell={this.DellContact}
               edit={this.EditContact}
             />
